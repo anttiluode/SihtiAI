@@ -1,0 +1,150 @@
+{
+  "source": "Independent local reproduction using Sihti-compatible graph, sieve, scenes, spectral and clustering algorithms",
+  "upstream_ref": "anttiluode/Sihti@b3af6936c35c1eae63a40117e803309fd33f6244",
+  "date": "2026-11-21",
+  "status": "Exploratory; beta=8 and beta=16 selected after beta=1 first-run failure",
+  "parameters": {
+    "h": 72,
+    "w": 96,
+    "noise": 0.02,
+    "sigma": 8,
+    "radius": 2,
+    "J": 4,
+    "laziness": 0.5,
+    "smooth_passes": 6
+  },
+  "metric": "Adjusted Rand index (ARI) [higher is better]",
+  "scenes": [
+    "twins",
+    "shade",
+    "overlap",
+    "stripes",
+    "leaves"
+  ],
+  "baseline_self": [
+    1,
+    0.215,
+    1,
+    0.71,
+    0.671
+  ],
+  "beta1": {
+    "core_only": [
+      0.059,
+      0,
+      0.076,
+      0,
+      0.383
+    ],
+    "signed_res": [
+      0.06,
+      0,
+      0.077,
+      0,
+      0.39
+    ],
+    "unsigned_res": [
+      0.059,
+      0,
+      0.076,
+      0,
+      0.386
+    ],
+    "unsigned_scrambled": [
+      0.059,
+      0,
+      0.077,
+      0,
+      0.384
+    ]
+  },
+  "beta8": {
+    "unsigned_res": [
+      0.025,
+      0,
+      0.182,
+      0.971,
+      0.39
+    ],
+    "unsigned_scrambled": [
+      -0.001,
+      0,
+      -0.003,
+      -0.001,
+      0.002
+    ]
+  },
+  "beta16": {
+    "unsigned_res": [
+      0.818,
+      0.104,
+      0.373,
+      0.959,
+      0.437
+    ]
+  },
+  "stripes_beta8_seeds_0_to_9": {
+    "self": [
+      0.71,
+      0.773,
+      0.773,
+      0.773,
+      0.71,
+      0.773,
+      0.773,
+      0.707,
+      0.767,
+      0.773
+    ],
+    "core_only": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "signed_res": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "unsigned_res": [
+      0.971,
+      0.969,
+      0.97,
+      0.969,
+      0.97,
+      0.969,
+      0.972,
+      0.97,
+      0.972,
+      0.97
+    ],
+    "unsigned_scrambled": [
+      -0.001,
+      -0.002,
+      -0.002,
+      -0.002,
+      -0.002,
+      -0.002,
+      -0.002,
+      -0.002,
+      -0.002,
+      -0.002
+    ]
+  },
+  "precision_note": "Table values rounded to 3 decimals; stripe ten-seed values rounded to 3 decimals; full-precision local run is in downloadable conversation bundle.",
+  "limitations": "No blinded beta selection, no natural images, no full learned attention head, and not a cross-scene segmentation win."
+}
