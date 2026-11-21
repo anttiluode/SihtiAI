@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ResidueHead — An excitable memory of what happened next</title>
+<style>
+:root {color-scheme:dark;--bg:#091219;--panel:#121e27;--panel2:#172732;--edge:#29424d;--text:#e8f2ef;--muted:#a3b7bc;--mint:#80ebce;--amber:#ffd58a;--rose:#ff9eaa;--blue:#8ebefc}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 60% -20%,#15333b 0%,var(--bg) 57%);color:var(--text);font:15px/1.48 ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial}
+.shell{max-width:1350px;margin:0 auto;padding:clamp(15px,3vw,40px)}
+a{color:var(--mint)}.mast{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--edge);padding-bottom:20px}
+.brand{font-size:13px;font-weight:850;letter-spacing:.22em;color:var(--mint)}.mast nav{display:flex;gap:20px;font-size:.88rem}
+h1{font-size:clamp(2.7rem,5.6vw,5.6rem);letter-spacing:-.055em;line-height:.99;margin:24px 0 14px;font-weight:780}
+h1 em{color:var(--mint);font-style:normal}h2{font-size:1.45rem;letter-spacing:-.02em;margin:0 0 8px}p{color:var(--muted);margin:10px 0;max-width:85ch}.subtitle{font-size:1.1rem;max-width:850px}
+.kicker{font-size:.76rem;color:var(--mint);letter-spacing:.18em;font-weight:720;margin-top:28px;text-transform:uppercase}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:clamp(12px,2vw,20px)}
+.controls{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:.81rem;font-weight:580}
+button,select,input[type=range]{font:inherit}button,select{background:#223640;border:1px solid #40606a;color:var(--text);border-radius:8px;min-height:39px;padding:7px 13px}
+button{cursor:pointer;font-weight:650}button:hover{border-color:var(--mint)}button.primary{color:#06231d;background:var(--mint);border-color:var(--mint)}button.warn{color:#ffb7b7;border-color:#7b4954}
+select{min-width:155px}input[type=checkbox]{width:18px;height:18px;accent-color:var(--mint)}.inline{flex-direction:row;gap:10px;align-items:center;padding-bottom:9px}.slider-group{min-width:140px}input[type=range]{accent-color:var(--mint);max-width:145px}
+#status{padding:10px 14px;margin-top:14px;color:var(--muted);border-left:3px solid var(--mint);border-radius:4px;background:var(--panel2);font-size:.86rem}
+.statgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:15px 0}
+.stat{background:var(--panel);border:1px solid var(--edge);padding:12px;border-radius:9px;min-width:0}
+.stat span{color:var(--muted);font-size:.75rem;display:block}.stat strong{font-size:clamp(1.25rem,2vw,1.95rem);font-variant-numeric:tabular-nums;display:block;white-space:nowrap}.stat small{color:var(--muted);font-size:.7rem}
+.visuals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.visual h3{font-size:.86rem;margin:0 0 8px;display:flex;justify-content:space-between;gap:8px}.visual .tag{color:var(--muted);font-weight:450}
+.visual canvas{display:block;width:100%;image-rendering:pixelated;aspect-ratio:4/3;background:#030a0b;border-radius:7px;}
+.visual p{font-size:.77rem;line-height:1.42;min-height:45px}
+.dashboard{display:grid;grid-template-columns: minmax(0,1.45fr) minmax(300px,.55fr);gap:12px;margin-top:12px}
+.chart{display:block;width:100%;height:190px;background:#0a151b;border-radius:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:.78rem;color:var(--muted)}.swatch{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:5px}
+.hits{font-size:.83rem;color:var(--muted);margin-top:13px}#topHits{line-height:2;font-variant-numeric:tabular-nums}
+.info{border-left:3px solid var(--amber);padding:12px 16px;background:#292619;color:#e4d9bd;margin-top:15px;font-size:.86rem}.explain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.explain b{color:var(--mint)}
+pre{background:#09161c;padding:16px;border:1px solid var(--edge);border-radius:10px;white-space:pre-wrap;line-height:1.75;font-size:.83rem}
+footer{border-top:1px solid var(--edge);margin-top:50px;padding:20px 0 0;color:var(--muted);font-size:.78rem}
+@media(max-width:980px){.visuals{grid-template-columns:repeat(2,minmax(0,1fr))}.statgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.dashboard{grid-template-columns:1fr}}
+@media(max-width:580px){.controls>*{flex:1 1 auto}.visuals{gap:8px}.visual p{display:none}.statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.explain{grid-template-columns:1fr}h1{font-size:2.8rem}}
+</style></head><body><div class="shell">
+<div class="mast"><div class="brand">SIHTI / RESIDUEHEAD</div><nav><a href="../index.html">SihtiAI</a><a href="https://github.com/anttiluode/SihtiAI">Code & history</a></nav></div>
+<div class="kicker">Local associative prediction · no model weights · runs offline</div>
+<h1>The past wakes.<br><em>The future is guessed.</em></h1>
+<p class="subtitle">A tiny head reads the current signal, finds a similar earlier state, reactivates <strong>what changed after that state</strong>, and adds the remembered change to predict the next frame. The arriving frame supplies the surprise, which changes the memory.</p>
+<div class="controls card" role="group" aria-label="Experiment controls">
+<label>Signal source<select id="source"><option value="bounce">Bouncing pulse · 96-frame loop</option><option value="orbit">Orbiting pulse · 120-frame loop</option><option value="split">Two movers · periodic</option><option value="file">Your video file</option><option value="camera">Live webcam</option></select></label>
+<label>Memory address<select id="address"><option value="temporal">Shape + recent motion</option><option value="gist">Shape only (ablation)</option></select></label>
+<label>Sampling rate<select id="rate"><option value="8">8 frames / second</option><option value="12" selected>12 frames / second</option><option value="20">20 frames / second</option></select></label>
+<label>Memory half-life<select id="halflife"><option value="60">Short / 60 frames</option><option value="420" selected>Medium / 420 frames</option><option value="2000">Long / 2000 frames</option></select></label>
+<button class="primary" id="run">Start</button><button id="step">Step once</button><button id="reset">Erase memory</button><button id="reverse">Reverse motion</button>
+<label class="inline"><input id="learning" type="checkbox" checked>Allow memory to learn</label>
+<label class="inline"><input id="correction" type="checkbox" checked>Use surprise to correct old bridges</label>
+<button id="save">Export CSV</button>
+<input id="file" type="file" accept="video/*" hidden>
+</div>
+<div id="status" role="status" aria-live="polite">Ready. Start the bouncing pulse and let it complete two cycles; watch the prediction become useful after the first.</div>
+<div class="statgrid">
+<div class="stat"><span>Observed frames</span><strong id="frames">0</strong><small>causal streaming</small></div>
+<div class="stat"><span>Stored bridges</span><strong id="bridges">0</strong><small>maximum 640</small></div>
+<div class="stat"><span>Prediction error</span><strong id="modelError">—</strong><small>rolling MSE × 1,000</small></div>
+<div class="stat"><span>Hold-last error</span><strong id="holdError">—</strong><small>same observations</small></div>
+<div class="stat"><span>Prediction advantage</span><strong id="advantage">—</strong><small>relative to hold-last</small></div>
+</div>
+<div class="visuals">
+<div class="card visual"><h3>01 / Incoming state <span class="tag">x(t)</span></h3><canvas id="current" width="48" height="36"></canvas><p>The observed signal, downsampled to 48 × 36 luminance values.</p></div>
+<div class="card visual"><h3>02 / Waking memory <span class="tag">Δ(t)</span></h3><canvas id="wake" width="48" height="36"></canvas><p>Green = remembered increase; red = remembered decrease. This is a <em>change</em>, not an old snapshot.</p></div>
+<div class="card visual"><h3>03 / Predicted next state <span class="tag">x̂(t+1)</span></h3><canvas id="prediction" width="48" height="36"></canvas><p>Current frame plus the reactivated change. Made before the next frame arrives.</p></div>
+<div class="card visual"><h3>04 / Prediction residue <span class="tag">surprise</span></h3><canvas id="surprise" width="48" height="36"></canvas><p>The previous prediction subtracted from what actually arrived. Brighter = greater surprise.</p></div>
+</div>
+<div class="dashboard">
+<div class="card"><h2>Does it predict better than simply waiting?</h2><p>Errors are measured against the next frame <em>before</em> that frame is stored. Lower is better. The initial learning period may be worse than the persistence baseline.</p><canvas id="chart" class="chart" width="740" height="195"></canvas><div class="legend"><span><i class="swatch" style="background:#80ebce"></i>Memory head</span><span><i class="swatch" style="background:#ffd58a"></i>Hold-last baseline</span></div></div>
+<div class="card"><h2>Which old state woke up?</h2><p>The nearest memory addresses are compared with the current coarse shape, optionally plus the recent motion signal. A low match distance means a familiar situation.</p><div id="topHits" class="hits">No completed memories yet.</div><p id="confidence">Readout confidence: —</p><div class="info">Experiment: after a repeated loop, switch from <strong>shape + motion</strong> to <strong>shape only</strong>. A location reached while going left and right can look identical yet demand opposite predictions.</div></div>
+</div>
+<section style="margin-top:45px"><h2>The three mechanical operations</h2>
+<div class="explain"><div class="card"><b>1. WRITE</b><p>The pair of observations determines a temporal residue: Δ = x(t+1) − x(t). Its address is the coarse signal plus optional recent motion. The transition is stored only after it has happened.</p></div><div class="card"><b>2. QUERY</b><p>A new address activates the six closest stored transitions. Their deltas are blended using similarity and recency. The result is added to the current signal to predict one tick ahead.</p></div><div class="card"><b>3. CORRECT</b><p>The next observation exposes the error. Close matching past transitions receive a small correction, and the newly observed transition is stored. Old entries fade in relevance and leave the finite memory.</p></div></div>
+<pre>address(t)  = [low_frequency(x(t)), low_frequency(x(t) - x(t-1))]
+memory      = {(address(j), x(j+1)-x(j)) : j &lt; t}
+reactivated = Σ similarity(address(t), address(j)) × delta(j)
+predict     = x(t) + reactivated
+surprise    = x(t+1) - predict
+write       = (address(t), x(t+1)-x(t))          // only after observing t+1</pre>
+<p><strong>Limits:</strong> This is an online nearest-neighbour transition memory, related to established associative memories and local dynamical models—not a newly discovered neuron or a trained world model. It performs best on recurring states and motion patterns. Webcam footage, unfamiliar actions, lighting changes and non-periodic motion may defeat it. Only measured error against hold-last establishes whether it helps on your signal. Video frames and memory stay in your browser; export contains error statistics, not camera images.</p>
+</section>
+<footer>ResidueHead / SihtiAI · No external assets or CDN · Privacy: all video/camera processing and memory local to this page · Source files: head.js, world.js, app.js · Deterministic benchmark: node test_head.js</footer>
+</div>
+<video id="video" playsinline muted style="display:none"></video><canvas id="sampler" width="48" height="36" style="display:none"></canvas>
+<script>
+/* ResidueHead: causal online associative transition memory. No imports, no network.
+   Every stored bridge is (address at t, observed delta t->t+1).
+   CommonJS export for Node tests; window.ResidueHead for offline HTML. */
+(function (root, factory) {
+  const Head = factory();
+  if (typeof module !== 'undefined' && module.exports) module.exports = Head;
+  if (root) root.ResidueHead = Head;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const clamp = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
+  const mse = (a,b) => { let s=0; for(let i=0;i<a.length;i++){const d=a[i]-b[i];s+=d*d;} return s/a.length; };
+  class ResidueHead {
+    constructor({width=48,height=36,gridX=12,gridY=9,capacity=640,neighbors=6,
+      halfLife=420,temperature=0.008,familiarityScale=0.02,feedback=0.06}={}) {
+      if (width%gridX || height%gridY) throw Error('Feature grid must divide frame dimensions');
+      this.width=width; this.height=height; this.N=width*height;
+      this.gridX=gridX; this.gridY=gridY; this.G=gridX*gridY;
+      this.capacity=capacity; this.neighbors=neighbors;
+      this.halfLife=halfLife; this.temperature=temperature; this.familiarityScale=familiarityScale;
+      this.feedback=feedback; this.mode='temporal'; this.learning=true;
+      this.reset();
+    }
+    reset(){this.bank=[];this.t=0;this.previous=null;this.previousAddress=null;
+      this.pending=null;this.trials=[];this.latest=null;this.totalModel=0;this.totalHold=0;
+      this.totalTrials=0;this.epoch=0;}
+    /** Spatial coarse average: one low-frequency address, *not* image reconstruction. */
+    gist(frame){
+      const result=new Float32Array(this.G),bx=this.width/this.gridX,by=this.height/this.gridY;
+      let k=0;
+      for(let gy=0;gy<this.gridY;gy++)for(let gx=0;gx<this.gridX;gx++){
+        let s=0;
+        for(let yy=0;yy<by;yy++)for(let xx=0;xx<bx;xx++)
+          s+=frame[(gy*by+yy)*this.width+gx*bx+xx];
+        result[k++]=s/(bx*by);
+      }
+      return result;
+    }
+    address(frame,previous){
+      const coarse=this.gist(frame),motion=new Float32Array(this.G);
+      if(previous){const old=this.gist(previous);for(let i=0;i<this.G;i++)motion[i]=coarse[i]-old[i];}
+      return {coarse,motion};
+    }
+    distance(a,b){
+      let s=0;
+      const weight=this.mode==='temporal'?16:0;
+      for(let i=0;i<this.G;i++){
+        const d=a.coarse[i]-b.coarse[i];
+        const v=a.motion[i]-b.motion[i];
+        s+=d*d+weight*v*v;
+      }
+      return s/this.G;
+    }
+    /** Only reads completed past transitions. Return predicted *delta* and its memory witnesses. */
+    retrieve(address){
+      const result=new Float32Array(this.N);
+      if(!this.bank.length) return {delta:result,confidence:0,distance:null,hits:[]};
+      const best=[];
+      for(let i=0;i<this.bank.length;i++){
+        const d=this.distance(address,this.bank[i].key);
+        if(best.length<this.neighbors || d<best[best.length-1].distance){
+          const hit={i,distance:d};
+          let j=best.findIndex(x=>x.distance>d);
+          if(j<0)j=best.length;
+          best.splice(j,0,hit);
+          if(best.length>this.neighbors)best.pop();
+        }
+      }
+      const first=best[0].distance;
+      let total=0;
+      for(const h of best){
+        const age=this.t-this.bank[h.i].t;
+        h.weight=Math.exp(-(h.distance-first)/this.temperature)*Math.pow(0.5,age/this.halfLife);
+        total+=h.weight;
+      }
+      for(const h of best){
+        h.weight/=total||1;
+        const value=this.bank[h.i].delta;
+        for(let k=0;k<this.N;k++)result[k]+=value[k]*h.weight;
+      }
+      const confidence=Math.exp(-first/this.familiarityScale);
+      return {delta:result,confidence, distance:first,
+        hits:best.map(h=>({index:h.i,distance:h.distance,weight:h.weight,age:this.t-this.bank[h.i].t}))};
+    }
+    forecast(frame,address){
+      const read=this.retrieve(address);
+      const pred=new Float32Array(this.N),wake=new Float32Array(this.N);
+      for(let i=0;i<this.N;i++){
+        wake[i]=read.delta[i]*read.confidence;
+        pred[i]=clamp(frame[i]+wake[i],0,1);
+      }
+      return {predicted:pred,wake,...read};
+    }
+    /** Surprise at t+1 edits past matched transitions and stores the completed bridge. */
+    write(previousAddress,truthDelta,retrieval,surprise){
+      // The newly arrived observation produced surprise = actual - prior forecast.
+      // Only a sufficiently familiar past route receives this corrective excitation.
+      if(this.feedback>0 && retrieval && retrieval.hits.length && retrieval.distance<0.01 && retrieval.confidence>0.4){
+        const gain=this.feedback;
+        for(const h of retrieval.hits){
+          const existing=this.bank[h.index].delta;
+          const amount=gain*h.weight;
+          for(let k=0;k<this.N;k++)existing[k]+=amount*surprise[k];
+        }
+      }
+      this.bank.push({key:previousAddress,delta:truthDelta,t:this.t});
+      if(this.bank.length>this.capacity)this.bank.shift();
+    }
+    /** Push exactly one currently observed frame; no peeking at the future. */
+    push(input){
+      if(input.length!==this.N)throw Error('Expected '+this.N+' grayscale samples');
+      const now=Float32Array.from(input);
+      let completed=null;
+      if(this.previous){
+        const targetDelta=new Float32Array(this.N);
+        for(let i=0;i<this.N;i++)targetDelta[i]=now[i]-this.previous[i];
+        const error=new Float32Array(this.N);
+        for(let i=0;i<this.N;i++)error[i]=now[i]-this.pending.predicted[i];
+        const modelError=mse(this.pending.predicted,now),holdError=mse(this.previous,now);
+        this.totalModel+=modelError;this.totalHold+=holdError;this.totalTrials++;
+        completed={index:this.t,modelError,holdError,error,
+          lastPrediction:this.pending.predicted,lastObserved:now,
+          lastWake:this.pending.wake,lastConfidence:this.pending.confidence,
+          improvement:holdError>1e-12?1-modelError/holdError:0};
+        this.trials.push({t:this.t,modelError,holdError,confidence:this.pending.confidence,bankSize:this.bank.length});
+        if(this.trials.length>5000)this.trials.shift();
+        if(this.learning)this.write(this.previousAddress,targetDelta,this.pending,error);
+      }
+      const key=this.address(now,this.previous);
+      const forecast=this.forecast(now,key);
+      this.previous=now;
+      this.previousAddress=key;
+      this.pending=forecast;
+      this.t++;
+      this.latest=completed;
+      return {completed,forecast,bankSize:this.bank.length,frames:this.t,
+        meanModel:this.totalTrials?this.totalModel/this.totalTrials:null,
+        meanHold:this.totalTrials?this.totalHold/this.totalTrials:null};
+    }
+    summary(){return {frames:this.t,completed:this.totalTrials,bankSize:this.bank.length,
+      mode:this.mode,learning:this.learning,
+      meanModel:this.totalTrials?this.totalModel/this.totalTrials:null,
+      meanHold:this.totalTrials?this.totalHold/this.totalTrials:null,
+      improvement:this.totalHold>0?1-this.totalModel/this.totalHold:null};}
+  }
+  ResidueHead.mse=mse;
+  return ResidueHead;
+});
+
+</script><script>
+/* Original deterministic worlds, shared by offline browser and Node tests. */
+(function(root,factory){const x=factory();if(typeof module!=='undefined'&&module.exports)module.exports=x;if(root)root.ResidueWorld=x;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  const fract=x=>x-Math.floor(x);
+  function render(kind,t,width=48,height=36){
+    const frame=new Float32Array(width*height);
+    let x,y,extra=false;
+    if(kind==='bounce'){
+      const p=fract(t/96),tri=1-Math.abs(2*p-1);
+      x=7+(width-14)*tri;y=height*.5;
+    }else if(kind==='orbit'){
+      x=width*.5+width*.32*Math.cos(2*Math.PI*t/120);
+      y=height*.5+height*.31*Math.sin(2*Math.PI*t/120);
+      extra=true;
+    }else if(kind==='split'){
+      // Same location can be reached with opposite velocities: a hidden direction.
+      const p=fract(t/80),tri=1-Math.abs(2*p-1);
+      x=6+(width-12)*tri;y=height*.52;
+      extra=true;
+    }else throw Error('Unknown world '+kind);
+    const s=3;
+    for(let yy=0;yy<height;yy++)for(let xx=0;xx<width;xx++){
+      const d2=(xx-x)**2+(yy-y)**2;
+      let v=.08 + .86*Math.exp(-d2/(2*s*s));
+      if(extra){const x2=width*.5+(width*.32)*Math.cos(2*Math.PI*(t+37)/120);
+        const y2=height*.5+height*.27*Math.sin(2*Math.PI*(t+37)/120);
+        v+=.25*Math.exp(-((xx-x2)**2+(yy-y2)**2)/(2*4*4));}
+      frame[yy*width+xx]=Math.min(1,v);
+    }
+    return frame;
+  }
+  return {render};
+});
+
+</script><script>
+/* Offline UI. Input capture never leaves the local browser. */
+(function(){'use strict';
+  const $=id=>document.getElementById(id);
+  const W=48,H=36,Head=globalThis.ResidueHead,World=globalThis.ResidueWorld;
+  const head=new Head({width:W,height:H});
+  const view={current:$('current'),wake:$('wake'),prediction:$('prediction'),surprise:$('surprise')};
+  const source=$('source'),file=$('file'),video=$('video');
+  const sampleCtx=$('sampler').getContext('2d',{willReadFrequently:true});
+  let timer=null,syntheticT=0,direction=1,cameraStream=null,videoUrl=null,sourceReady=false;
+  let changeAt=-1,chartData=[];
+  const setStatus=s=>{$('status').textContent=s;};
+  function stop(){if(timer!==null){clearInterval(timer);timer=null;}$('run').textContent='Start';}
+  function release(){stop();if(cameraStream){for(const track of cameraStream.getTracks())track.stop();cameraStream=null;}
+    video.pause();video.srcObject=null;
+    if(videoUrl){URL.revokeObjectURL(videoUrl);videoUrl=null;}
+    video.removeAttribute('src');sourceReady=false;
+  }
+  function paint(name,array){const ctx=view[name].getContext('2d');const img=ctx.createImageData(W,H);
+    for(let i=0;i<W*H;i++){
+      const j=i*4;let r,g,b;const v=array?array[i]:0;
+      if(name==='wake'){
+        const z=Math.min(1,Math.abs(v)*7);
+        r=v<0?Math.round(36+206*z):20;
+        g=v>0?Math.round(36+205*z):20;
+        b=Math.round(26+74*z);
+      }else if(name==='surprise'){
+        const z=Math.min(1,Math.abs(v)*8);
+        r=Math.round(9+244*z);g=Math.round(14+180*z);b=Math.round(22+36*z);
+      }else{let z=Math.min(1,Math.max(0,v));r=g=b=Math.round(z*255);}
+      img.data[j]=r;img.data[j+1]=g;img.data[j+2]=b;img.data[j+3]=255;
+    }
+    ctx.putImageData(img,0,0);
+  }
+  function frameFromVideo(){
+    if(video.readyState<2||video.videoWidth<1)return null;
+    if(video.ended){stop();setStatus('Video ended. The stored bridges remain; play again to test recall.');return null;}
+    sampleCtx.drawImage(video,0,0,W,H);
+    const rgb=sampleCtx.getImageData(0,0,W,H).data,gray=new Float32Array(W*H);
+    for(let i=0;i<W*H;i++){const p=i*4;gray[i]=(.2126*rgb[p]+.7152*rgb[p+1]+.0722*rgb[p+2])/255;}
+    return gray;
+  }
+  function tick(){
+    let frame;
+    if(source.value==='file'||source.value==='camera')frame=frameFromVideo();
+    else {frame=World.render(source.value,syntheticT,W,H);syntheticT+=direction;}
+    if(!frame)return;
+    const result=head.push(frame);
+    paint('current',frame);paint('wake',result.forecast.wake);
+    paint('prediction',result.forecast.predicted);
+    if(result.completed)paint('surprise',result.completed.error);
+    $('frames').textContent=result.frames;
+    $('bridges').textContent=result.bankSize;
+    const score=result.completed;
+    if(score){chartData.push({m:score.modelError,b:score.holdError});if(chartData.length>220)chartData.shift();drawChart();}
+    const recent=chartData.slice(-80);
+    if(recent.length){
+      const m=recent.reduce((s,d)=>s+d.m,0)/recent.length;
+      const b=recent.reduce((s,d)=>s+d.b,0)/recent.length;
+      $('modelError').textContent=(m*1000).toFixed(3);
+      $('holdError').textContent=(b*1000).toFixed(3);
+      const delta=b>1e-12?(1-m/b)*100:0;
+      $('advantage').textContent=(delta>=0?'+':'')+delta.toFixed(1)+'%';
+      $('advantage').style.color=delta>=0?'var(--mint)':'var(--rose)';
+    }
+    const f=result.forecast;
+    $('confidence').textContent='Readout confidence: '+(f.confidence*100).toFixed(1)+'% · key distance: '+(f.distance==null?'—':f.distance.toFixed(5));
+    $('topHits').textContent=f.hits.length?f.hits.slice(0,4).map((h,i)=>
+      '#'+(i+1)+' · age '+h.age+' frames · contribution '+(100*h.weight).toFixed(1)+'%').join('  |  '):'No old transitions to retrieve.';
+    if(result.frames===1)setStatus('First state observed. There is no completed transition yet.');
+    else if(result.frames===20)setStatus('Learning from completed transitions. Let a full loop repeat; watch the two error curves.');
+    else if(result.frames===110 && source.value==='bounce')setStatus('The pulse has returned to states seen earlier. This is where associative reactivation can begin to help.');
+  }
+  function drawChart(){const canvas=$('chart'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#09161d';ctx.fillRect(0,0,w,h);
+    if(chartData.length<2)return;
+    const max=Math.max(1e-7,...chartData.flatMap(d=>[d.m,d.b]))*1.05;
+    ctx.strokeStyle='#29424d';ctx.lineWidth=1;
+    for(let i=1;i<=4;i++){const y=(i/5)*h;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    for(const [key,color] of [['b','#ffd58a'],['m','#80ebce']]){
+      ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();
+      chartData.forEach((d,i)=>{const x=i/(chartData.length-1)*(w-14)+7,y=h-12-d[key]/max*(h-25);
+        if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+    }
+    ctx.fillStyle='#9ab0b8';ctx.font='12px sans-serif';ctx.fillText('max '+(max*1000).toFixed(2)+' ×10⁻³ MSE',12,16);
+  }
+  function erase(resetWorld=false){head.reset();chartData=[];drawChart();
+    if(resetWorld){syntheticT=0;direction=1;}
+    for(const k of Object.keys(view))paint(k,null);
+    for(const id of ['frames','bridges'])$(id).textContent='0';
+    for(const id of ['modelError','holdError','advantage'])$(id).textContent='—';
+    $('topHits').textContent='No completed memories yet.';$('confidence').textContent='Readout confidence: —';
+    setStatus('Memory cleared. No previously stored transitions remain.');
+  }
+  async function start(){
+    if(timer!==null){stop();setStatus('Paused. The memory and recorded errors are preserved.');return;}
+    if(source.value==='file'&&!videoUrl){file.click();return;}
+    if(source.value==='camera'&&!cameraStream){
+      if(!navigator.mediaDevices?.getUserMedia){setStatus('Webcam unavailable in this browser/context. Try video file or the built-in motion worlds.');return;}
+      try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+        video.srcObject=cameraStream;video.muted=true;await video.play();}
+      catch(e){setStatus('Camera could not start: '+e.message+'. Video files and synthetic worlds still work.');return;}
+    }
+    if(source.value==='file'){
+      try{if(video.ended)video.currentTime=0;await video.play();}
+      catch(e){setStatus('Video could not play: '+e.message);return;}
+    }
+    timer=setInterval(tick,1000/Number($('rate').value));
+    $('run').textContent='Pause';setStatus('Streaming. Each prediction is made before the next observation.');
+  }
+  $('run').addEventListener('click',start);
+  $('step').addEventListener('click',()=>{if(timer!==null)stop();if(['file','camera'].includes(source.value)){setStatus('For video/camera press Start. Step once works on built-in sources.');return;}tick();});
+  $('reset').addEventListener('click',()=>erase(true));
+  $('reverse').addEventListener('click',()=>{
+    if(['file','camera'].includes(source.value)){setStatus('Reverse applies to built-in simulated motion only.');return;}
+    direction*=-1;setStatus('Intervention: motion reversed without erasing memory. Watch surprise and subsequent readout.');
+  });
+  $('address').addEventListener('change',()=>{head.mode=$('address').value;
+    setStatus(head.mode==='gist'?'Address now ignores movement history. Opposite motion at the same location can become ambiguous.':'Address now includes the last movement as well as current shape. Memory was not erased.');});
+  $('halflife').addEventListener('change',()=>{head.halfLife=Number($('halflife').value);setStatus('Changed how quickly old transitions lose influence. Memory entries were preserved.');});
+  $('correction').addEventListener('change',()=>{head.feedback=$('correction').checked?0.06:0;
+    setStatus(head.feedback?'Surprise now corrects nearby old transitions and writes new bridges.':'Correction of old transitions disabled; new completed transitions are still stored.');});
+  $('learning').addEventListener('change',()=>{head.learning=$('learning').checked;
+    setStatus(head.learning?'Learning resumed from newly observed transitions.':'Learning frozen. Testing only using already stored transitions.');});
+  $('rate').addEventListener('change',()=>{if(timer!==null){clearInterval(timer);timer=setInterval(tick,1000/Number($('rate').value));}});
+  source.addEventListener('change',()=>{
+    const choice=source.value;release();
+    if(choice==='file'){file.click();setStatus('Choose a video from your computer. Only small grayscale frames are processed; nothing is uploaded.');}
+    else if(choice==='camera')setStatus('Press Start to request webcam permission. For file:// restrictions, use a video file or built-in world.');
+    else setStatus('Changed the signal to '+choice+'. Existing memory remains, so you can observe how it handles an unfamiliar world.');
+  });
+  file.addEventListener('change',()=>{
+    if(!file.files?.length)return;
+    release();videoUrl=URL.createObjectURL(file.files[0]);video.src=videoUrl;video.loop=false;video.muted=true;
+    setStatus('Selected '+file.files[0].name+'. Click Start to predict incoming video frames locally.');
+    source.value='file';
+  });
+  $('save').addEventListener('click',()=>{
+    const lines=['t,model_mse,hold_last_mse,retrieval_confidence,stored_bridges'];
+    for(const row of head.trials)lines.push([row.t,row.modelError,row.holdError,row.confidence,row.bankSize].join(','));
+    const blob=new Blob([lines.join('\n')+'\n'],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download='residue_head_receipt.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    setStatus('Saved local prediction-error history as a CSV. No camera pixels were exported.');
+  });
+  for(const k of Object.keys(view))paint(k,null);
+  drawChart();
+  window.addEventListener('beforeunload',release);
+})();
+
+</script>
+</body></html>
