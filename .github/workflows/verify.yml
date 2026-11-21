@@ -32,3 +32,27 @@ jobs:
         run: |
           python persistence_head.py --scene stripes --height 24 --width 32 --beta 1 --output results/ci_beta1.json
           python persistence_head.py --scene stripes --height 24 --width 32 --beta 8 --output results/ci_beta8.json
+
+      - name: Full five-scene reference run
+        working-directory: SihtiAI
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+        run: |
+          python persistence_head.py --beta 1 --output results/ci_full_beta1.json
+          python persistence_head.py --beta 8 --output results/ci_full_beta8.json
+          python - <<'PY'
+          import json
+          for beta in (1, 8):
+              rows = json.load(open(f"results/ci_full_beta{beta}.json"))["runs"]
+              print("REFERENCE ARI BETA", beta)
+              for scene in ("twins", "shade", "overlap", "stripes", "leaves"):
+                  vals = {r["method"]:round(r["ari"], 4) for r in rows if r["scene"] == scene}
+                  print(scene, "self", vals["self"], "unsigned", vals["unsigned_res"],
+                        "signed", vals["signed_res"], "scrambled", vals["unsigned_scrambled"])
+          PY
+      - name: Archive measurements
+        uses: actions/upload-artifact@v4
+        with:
+          name: sihtiai-reference-scores
+          path: SihtiAI/results/ci_full_beta*.json
