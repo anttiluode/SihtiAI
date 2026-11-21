@@ -56,3 +56,14 @@ jobs:
         with:
           name: sihtiai-reference-scores
           path: SihtiAI/results/ci_full_beta*.json
+
+      - name: Causal predictive residue-head tests
+        working-directory: SihtiAI/predictive
+        run: |
+          node test_head.js
+          node benchmark.js
+      - name: Archive predictive-memory measurements
+        uses: actions/upload-artifact@v4
+        with:
+          name: residuehead-frozen-memory-scores
+          path: SihtiAI/predictive/results/benchmark.json
