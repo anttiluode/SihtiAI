@@ -1,0 +1,34 @@
+name: verify SihtiAI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: SihtiAI
+      - uses: actions/checkout@v4
+        with:
+          repository: anttiluode/Sihti
+          ref: b3af6936c35c1eae63a40117e803309fd33f6244
+          path: Sihti
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: SihtiAI/requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r SihtiAI/requirements.txt
+      - name: Unit checks
+        working-directory: SihtiAI
+        run: python -m unittest discover -s tests -v
+      - name: Two parameter smoke checks
+        working-directory: SihtiAI
+        run: |
+          python persistence_head.py --scene stripes --height 24 --width 32 --beta 1 --output results/ci_beta1.json
+          python persistence_head.py --scene stripes --height 24 --width 32 --beta 8 --output results/ci_beta8.json
