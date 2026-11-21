@@ -86,3 +86,20 @@ The companion experiment keeps the negative first-run result front and center ra
 - The discussion's proposed four-arm test: Neon / Gemini, November 21, 2026.
 - Implementation, checks, and negative controls: November 21, 2026.
 - No dataset download, GPU, model weights or server needed.
+
+
+## Verified on pinned upstream Sihti
+
+GitHub Actions [run 44871149961](https://github.com/anttiluode/SihtiAI/actions/runs/44871149961) completed **successfully** on 2026-11-21 using the original Sihti code at revision b3af6936, Python 3.12, and the full 72×96 five-scene tests. It also passed the six unit tests and generated two downloadable JSON measurement artifacts (β=1 and β=8).
+
+The reference run reproduced the independently observed values, to four decimals:
+
+| Scene | Original self ARI | Unsigned β=1 | Unsigned β=8 | Signed β=8 | Scrambled β=8 |
+|---|---:|---:|---:|---:|---:|
+| Twins | 1.0000 | 0.0591 | 0.0251 | 0.9529 | -0.0015 |
+| Shade | 0.2151 | 0.0000 | 0.0000 | 0.0040 | 0.0001 |
+| Overlap | 1.0000 | 0.0758 | 0.1818 | 0.2867 | -0.0032 |
+| Stripes | 0.7103 | 0.0001 | **0.9712** | 0.0001 | -0.0015 |
+| Leaves | 0.6707 | 0.3861 | 0.3897 | 0.5008 | 0.0017 |
+
+**This verifies the synthetic effect, not general usefulness.** The favoured beta was selected after inspecting the stripes case, and almost every other scene remains worse than self-affinity. The Python reference run and experimental code remain more authoritative than the site's simplified browser visualisation.
