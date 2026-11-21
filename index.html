@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SihtiAI — What dies becomes a signal</title>
+<style>
+:root { color-scheme:dark; --bg:#101820; --panel:#1a2731; --ink:#e9f1ef; --muted:#a2b5bc; --accent:#93e3c2; --line:#38505c; }
+* {box-sizing:border-box} body {background:var(--bg);color:var(--ink);margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1170px;margin:auto;padding:clamp(16px,4vw,55px)}
+header{border-bottom:1px solid var(--line);padding:26px 0 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{letter-spacing:.22em;font-size:.9rem;font-weight:800;color:var(--accent)}
+a{color:var(--accent)}nav{display:flex;gap:20px;font-size:.9rem}
+.kicker{color:var(--accent);font-weight:650;text-transform:uppercase;letter-spacing:.17em;font-size:.78rem;margin-top:35px}
+h1{font-weight:720;letter-spacing:-.04em;line-height:1.04;font-size:clamp(2.5rem,6vw,5.4rem);max-width:880px;margin:14px 0}
+h2{font-size:clamp(1.4rem,3vw,2.3rem);letter-spacing:-.025em;margin:0 0 14px}
+p{color:var(--muted);max-width:75ch}
+.lede{font-size:1.18rem;max-width:760px}
+section{margin-top:55px} .pill{display:inline-block;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:3px 12px;font-size:.8rem}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px;min-width:0}
+figure{margin:0}figcaption{font-weight:650;font-size:.86rem;min-height:46px;line-height:1.25}
+.canvas{width:100%;aspect-ratio:4/3;display:block;image-rendering:pixelated;background:#000;border-radius:6px}
+.small{font-size:.78rem;color:var(--muted)}
+.controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:20px 0 16px}
+button{background:#283b46;color:var(--ink);border:1px solid var(--line);padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer}
+button[aria-pressed="true"]{border-color:var(--accent);color:#101820;background:var(--accent)}
+aside{border-left:3px solid #93e3c2;padding:10px 16px;color:var(--muted);background:#182830;border-radius:3px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}td:last-child,th:last-child{text-align:right}td.num{text-align:right;font-variant-numeric:tabular-nums}
+.good{color:#93e3c2}.bad{color:#ffbaae}
+.barline{background:#2a3c49;height:8px;border-radius:6px;overflow:hidden;min-width:60px}
+.fill{background:var(--accent);height:100%}
+.compare{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{white-space:pre-wrap;background:#071016;border-radius:9px;border:1px solid var(--line);padding:15px;font-size:.85rem;line-height:1.7}
+footer{margin-top:50px;padding:25px 0;color:var(--muted);border-top:1px solid var(--line);font-size:.85rem}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.compare{grid-template-columns:1fr}}
+@media(max-width:500px){.grid{grid-template-columns:1fr 1fr}.panel{padding:8px}figcaption{font-size:.74rem}main{padding:16px}}
+</style>
+</head>
+<body><main>
+<header><div class="logo">SIHTI / AI</div><nav><a href="https://github.com/anttiluode/SihtiAI">Source & tests</a><a href="https://github.com/anttiluode/Sihti">Original Sihti</a></nav></header>
+<div class="kicker">Research log · 21 November 2026</div>
+<h1>What dies becomes<br>a signal.</h1>
+<p class="lede">Sihti keeps every octave of information lost during diffusion. Can the <em>unsigned lifetime</em> of those residues tell the next graph which pixels belong together?</p>
+<span class="pill">A real negative result, with a conditional texture rescue</span>
+<section>
+<h2>The lifetime microscope</h2>
+<p>This interactive sketch runs a grayscale, colour-blind lattice sieve in your browser. It illustrates the mechanism, not the full CIELAB spectral-clustering benchmark. Select an input, then inspect what survives and what dies. No server, AI model or uploads.</p>
+<div class="controls"><span class="small">Input</span><button data-scene="stripes" aria-pressed="true">Striped object</button><button data-scene="twins" aria-pressed="false">Twin objects</button><span class="pill">Depth 16 · five octave bands · six energy-pooling passes</span></div>
+<div class="grid">
+<figure class="panel"><figcaption>01 / Original image</figcaption><canvas id="input" class="canvas" width="64" height="48"></canvas><div class="small">The black and white stripes are opposite in colour.</div></figure>
+<figure class="panel"><figcaption>02 / Surviving core</figcaption><canvas id="core" class="canvas" width="64" height="48"></canvas><div class="small">Diffusion erases fine stripes and softens object boundaries.</div></figure>
+<figure class="panel"><figcaption>03 / Unsigned residue energy</figcaption><canvas id="energy" class="canvas" width="64" height="48"></canvas><div class="small">A lifetime signature shared by opposite contrasts.</div></figure>
+<figure class="panel"><figcaption>04 / Restored sum</figcaption><canvas id="restored" class="canvas" width="64" height="48"></canvas><div class="small">Core plus the original signed residues reconstructs the input.</div></figure>
+</div>
+<aside style="margin-top:16px">A lossless decomposition is guaranteed by telescoping. Useful segmentation is not. The crucial missing step is how to turn this residue energy into <strong>good graph edges</strong>.</aside>
+</section>
+<section>
+<h2>What the actual graph experiment found</h2>
+<p>The Python benchmark used the original five Sihti scenes, 72×96 resolution, normalized-cut spectral modes, and a signed / unsigned / shuffled control. The initially proposed weight <strong>β = 1 failed</strong>. Higher weights were explored after seeing this failure.</p>
+<div class="controls"><span class="small">Feedback scale β</span><button data-beta="1" aria-pressed="true">1 · proposed</button><button data-beta="8" aria-pressed="false">8 · exploratory</button><button data-beta="16" aria-pressed="false">16 · exploratory</button></div>
+<div class="compare">
+<div class="panel"><table><thead><tr><th>Scene</th><th>Self ARI</th><th>Unsigned ARI</th></tr></thead><tbody id="scores"></tbody></table><div class="small" style="margin-top:13px">ARI = adjusted Rand index, higher is better. Values from an independent compatible reproduction of Sihti's primitives. Rerun the repo script against upstream for strict verification.</div></div>
+<div class="panel"><h3 id="verdict-title" style="margin-top:0">The first test failed.</h3><p id="verdict-copy">The raw self graph grouped stripes better than the unsigned-feedback graph. Simply connecting the sieve's exhaust back to the graph was insufficient.</p><p class="small">The exploratory β=8 result averages 0.970 stripe ARI across 10 noise seeds; signed and spatially scrambled controls remain approximately zero. Other scenes regress strongly.</p></div>
+</div>
+</section>
+<section>
+<h2>The exact interface</h2>
+<pre>R[j] = state[depth[j]] - state[depth[j+1]]
+original = core + sum(R[j])                  # identity
+energy[j] = lattice_pool(norm(R[j]))         # unsigned
+features = concat(core, beta * energy)       # hypothesis
+graph = RBF_affinity(features)               # tested
+segments = spectral_modes(graph)             # not learned</pre>
+<p>The proposed mechanism is <strong>not</strong> a discovery that “a sieve is an attention head.” Its more precise hypothesis is that spatially shared lifetimes can serve as a feature for a later relational graph. The surviving research problem is discriminating <strong>two-dimensional texture interiors</strong> from the narrow halos produced at ordinary object boundaries.</p>
+<p><a href="https://github.com/anttiluode/SihtiAI/blob/main/README.md">Read the measured controls and reproduce the benchmark</a></p>
+</section>
+<footer>SihtiAI · Interactive illustration uses an independent grayscale lattice approximation; all reported ARI values come from the separate Python benchmark. No claim of transformer improvement or general-purpose object discovery.</footer>
+</main>
+<script>
+const W=64,H=48,N=W*H;
+let scene="stripes",beta=1;
+const fixed={twins:1.000,shade:.215,overlap:1, stripes:.710,leaves:.671};
+const measured={
+  1:{twins:.059,shade:0,overlap:.076,stripes:0,leaves:.386},
+  8:{twins:.025,shade:0,overlap:.182,stripes:.971,leaves:.390},
+  16:{twins:.818,shade:.104,overlap:.373,stripes:.959,leaves:.437}
+};
+function makeInput(){
+ const x=new Float64Array(N);
+ for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++){
+   let v=.5;
+   if(scene==="stripes"){
+     const disk=(xx-W/2)**2+(y-H/2)**2<(H*.36)**2;
+     if(disk)v=(Math.floor(xx/3)%2===0)? .05:.95;
+   } else {
+     const left=(xx-W*.29)**2+(y-H/2)**2<(H*.19)**2;
+     const right=(xx-W*.71)**2+(y-H/2)**2<(H*.19)**2;
+     if(left||right)v=.20;
+     else v=.48;
+   }
+   x[y*W+xx]=v;
+ }
+ return x;
+}
+const offsets=[];
+for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)
+  if((dx||dy)&&dx*dx+dy*dy<=4)offsets.push([dy,dx,Math.exp(-(dx*dx+dy*dy)/8)]);
+function diffuse(src){
+ const dst=new Float64Array(N);
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+   let sum=0,deg=0;
+   for(const [dy,dx,weight] of offsets){
+     const yy=y+dy,xx=x+dx;
+     if(yy<0||xx<0||yy>=H||xx>=W)continue;
+     deg+=weight;sum+=src[yy*W+xx]*weight;
+   }
+   const id=y*W+x;
+   dst[id]=.5*src[id]+.5*sum/deg;
+ }
+ return dst;
+}
+function draw(canvasId,arr,transform){
+ const ctx=document.getElementById(canvasId).getContext("2d");
+ const im=ctx.createImageData(W,H);
+ for(let i=0;i<N;i++){
+   let v=Math.max(0,Math.min(1,transform(arr[i])));
+   const q=Math.round(v*255),o=4*i;
+   if(canvasId==="energy"){
+     im.data[o]=Math.round(35+220*v);
+     im.data[o+1]=Math.round(46+195*v);
+     im.data[o+2]=Math.round(55+95*(1-v));
+   }else{im.data[o]=q;im.data[o+1]=q;im.data[o+2]=q;}
+   im.data[o+3]=255;
+ }
+ ctx.putImageData(im,0,0);
+}
+function refreshMicroscope(){
+ const original=makeInput();let cur=original.slice(),records=[cur.slice()],depths=[0,1,2,4,8,16],step=0;
+ for(const d of depths.slice(1)){
+   while(step<d){cur=diffuse(cur);step++}
+   records.push(cur.slice());
+ }
+ const core=records[records.length-1];
+ let energies=new Float64Array(N),sum=new Float64Array(N);
+ for(let k=0;k<records.length-1;k++){
+   let e=new Float64Array(N);
+   for(let i=0;i<N;i++){const r=records[k][i]-records[k+1][i];sum[i]+=r;e[i]=Math.abs(r)}
+   for(let p=0;p<6;p++)e=diffuse(e);
+   for(let i=0;i<N;i++)energies[i]+=e[i];
+ }
+ const rec=core.map((v,i)=>v+sum[i]);
+ const max=Math.max(...energies);
+ draw("input",original,v=>v);draw("core",core,v=>v);
+ draw("energy",energies,v=>v/(max||1));draw("restored",rec,v=>v);
+}
+function refreshScores(){
+ const parent=document.getElementById("scores");parent.textContent="";
+ for(const name of Object.keys(fixed)){
+   const tr=document.createElement("tr");
+   const self=fixed[name],uns=measured[beta][name];
+   for(const v of [name,self.toFixed(3),uns.toFixed(3)]){
+     const td=document.createElement("td");td.textContent=v;
+     if(v===uns.toFixed(3)&&uns>self)td.className="good";
+     tr.appendChild(td);
+   }
+   parent.appendChild(tr);
+ }
+ const title=document.getElementById("verdict-title"),copy=document.getElementById("verdict-copy");
+ if(beta===1){title.textContent="The first test failed.";copy.textContent="The unsigned feedback performed almost exactly like a blurred-core control, even on stripes. We keep this failed run visible."}
+ else{title.textContent="A texture rescue, not a general solution.";copy.textContent="At β="+beta+" the stripes form a coherent region; the same representation still makes familiar objects worse than the original Sihti graph. This scale was selected post hoc."}
+}
+for(const b of document.querySelectorAll("[data-scene]"))b.addEventListener("click",()=>{
+ scene=b.dataset.scene;
+ for(const a of document.querySelectorAll("[data-scene]"))a.setAttribute("aria-pressed",String(a===b));
+ refreshMicroscope();
+});
+for(const b of document.querySelectorAll("[data-beta]"))b.addEventListener("click",()=>{
+ beta=Number(b.dataset.beta);
+ for(const a of document.querySelectorAll("[data-beta]"))a.setAttribute("aria-pressed",String(a===b));
+ refreshScores();
+});
+refreshMicroscope();refreshScores();
+</script>
+</body></html>
