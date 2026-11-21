@@ -1,0 +1,45 @@
+{
+  "protocol": "Train exactly one period; freeze; evaluate next cycle with no memory writes.",
+  "rows": [
+    {
+      "world": "bounce",
+      "address": "temporal",
+      "trainFrames": 96,
+      "testFrames": 95,
+      "learningFrozen": true,
+      "meanPredictionMSE": 0.000026475853831396776,
+      "meanHoldLastMSE": 0.0003348996667052255,
+      "relativeImprovement": 0.9209439230206804
+    },
+    {
+      "world": "bounce",
+      "address": "gist",
+      "trainFrames": 96,
+      "testFrames": 95,
+      "learningFrozen": true,
+      "meanPredictionMSE": 0.0003258361579441803,
+      "meanHoldLastMSE": 0.0003348996667052255,
+      "relativeImprovement": 0.027063355572171544
+    },
+    {
+      "world": "orbit",
+      "address": "temporal",
+      "trainFrames": 120,
+      "testFrames": 119,
+      "learningFrozen": true,
+      "meanPredictionMSE": 0.000008233212718093029,
+      "meanHoldLastMSE": 0.00035572135336510235,
+      "relativeImprovement": 0.9768548819456371
+    },
+    {
+      "world": "orbit",
+      "address": "gist",
+      "trainFrames": 120,
+      "testFrames": 119,
+      "learningFrozen": true,
+      "meanPredictionMSE": 0.000010734948523583646,
+      "meanHoldLastMSE": 0.00035572135336510235,
+      "relativeImprovement": 0.9698220294563942
+    }
+  ]
+}
